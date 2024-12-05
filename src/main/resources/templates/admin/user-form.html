@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>User Form</title>
+    <!-- Include any additional head elements or CSS here -->
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1 class="my-4" th:text="${user.id != null} ? 'Edit User' : 'Add New User'">User Form</h1>
+        
+        <!-- User Form -->
+        <form th:action="${user.id != null} ? @{/admin/users/{id}(id=${user.id})} : @{/admin/users}" 
+              th:object="${user}" method="post" novalidate>
+              
+            <!-- Hidden ID Field (only for editing existing users) -->
+            <input type="hidden" th:if="${user.id != null}" th:field="*{id}"/>
+            
+            <!-- Username Field -->
+            <div class="mb-3">
+                <label for="username" class="form-label">Username</label>
+                <input type="text" th:field="*{username}" class="form-control" id="username" placeholder="Enter username">
+                <!-- Validation Error Message -->
+                <div th:if="${#fields.hasErrors('username')}" class="text-danger" th:errors="*{username}">Username Error</div>
+            </div>
+            
+            <!-- Email Field -->
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" th:field="*{email}" class="form-control" id="email" placeholder="Enter email">
+                <!-- Validation Error Message -->
+                <div th:if="${#fields.hasErrors('email')}" class="text-danger" th:errors="*{email}">Email Error</div>
+            </div>
+            
+            <!-- Password Field -->
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" th:field="*{password}" class="form-control" id="password" placeholder="Enter password">
+                <!-- Hint for Password Change -->
+                <small class="form-text text-muted">Leave blank to keep the current password.</small>
+                <!-- Validation Error Message -->
+                <div th:if="${#fields.hasErrors('password')}" class="text-danger" th:errors="*{password}">Password Error</div>
+            </div>
+            
+            <!-- Confirm Password Field -->
+            <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirm Password</label>
+                <input type="password" th:field="*{confirmPassword}" class="form-control" id="confirmPassword" placeholder="Confirm password">
+                <!-- Validation Error Message -->
+                <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger" th:errors="*{confirmPassword}">Confirm Password Error</div>
+            </div>
+            
+            <!-- Roles Field -->
+            <div class="mb-3">
+                <label class="form-label">Roles</label>
+                <div th:each="role : ${roles}" class="form-check">
+                    <input type="checkbox" name="roleIds" th:value="${role.id}" 
+                           class="form-check-input" 
+                           th:id="'role_' + ${role.id}"
+                           th:checked="${user.roles != null} ? ${user.roles.contains(role)} : false"/>
+                    <label class="form-check-label" th:for="'role_' + ${role.id}" th:text="${role.name}">Role Name</label>
+                </div>
+                <!-- Validation Error Message -->
+                <div th:if="${#fields.hasErrors('roles')}" class="text-danger" th:errors="*{roles}">Roles Error</div>
+            </div>
+            
+            <!-- Submit and Cancel Buttons -->
+            <button type="submit" class="btn btn-primary" 
+                    th:text="${user.id != null} ? 'Update User' : 'Create User'">Submit</button>
+            <a th:href="@{/admin/users}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</body>
+</html>

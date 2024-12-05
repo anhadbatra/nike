@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>User Management</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h1 class="my-4">User Management</h1>
+        
+        <!-- Search Form -->
+        <form th:action="@{/admin/users}" method="get" class="d-flex mb-3">
+            <input type="text" name="keyword" class="form-control me-2" placeholder="Search..." th:value="${keyword}">
+            <button type="submit" class="btn btn-outline-success">Search</button>
+        </form>
+        
+        <!-- Add New User Button -->
+        <div class="mb-3">
+            <a th:href="@{/admin/users/new}" class="btn btn-primary">Add New User</a>
+        </div>
+        
+        <!-- Users Table -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Roles</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Iterate Over Users -->
+                <tr th:each="user : ${users}">
+                    <td th:text="${user.username}">Username</td>
+                    <td th:text="${user.email}">Email</td>
+                    <td>
+                        <!-- Iterate Over Roles with Iteration Status -->
+                        <span th:each="role, iterStat : ${user.roles}">
+                            <span th:text="${role.name}">Role Name</span>
+                            <!-- Append comma if not the last role -->
+                            <span th:if="${!iterStat.last}">, </span>
+                        </span>
+                    </td>
+                    <td>
+                        <!-- Edit Button -->
+                        <a th:href="@{/admin/users/edit/{id}(id=${user.id})}" class="btn btn-warning btn-sm">Edit</a>
+                        <!-- Delete Button with Confirmation -->
+                        <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure?');">Delete</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

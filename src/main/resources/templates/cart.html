@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+    layout:decorate="~{layout}">
+
+<head>
+    <title>Shopping Cart</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <h1 class="my-4">Your Cart</h1>
+
+        <!-- Empty Cart Section -->
+        <div th:if="${cart.cartItems.isEmpty()}">
+            <p>Your cart is empty.</p>
+            <a th:href="@{/products}" class="btn btn-primary">Continue Shopping</a>
+        </div>
+
+        <!-- Populated Cart Section -->
+        <div th:if="${!cart.cartItems.isEmpty()}">
+            <form th:action="@{/cart/clear}" method="post" class="mb-3">
+                <button type="submit" class="btn btn-danger">Clear Cart</button>
+            </form>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="item : ${cart.cartItems}">
+                        <td th:text="${item.product.name}">Product Name</td>
+                        <td th:text="${#numbers.formatDecimal(item.product.price, 1, 2)} + ' $'">Price</td>
+                        <td>
+                            <form th:action="@{/cart/update}" method="post" class="d-flex">
+                                <input type="hidden" name="productId" th:value="${item.product.id}" />
+                                <input type="number" name="quantity" th:value="${item.quantity}" min="1"
+                                    class="form-control me-2" style="width: 80px;" />
+                                <button type="submit" class="btn btn-primary btn-sm">Update</button>
+                            </form>
+                        </td>
+                        <td th:text="${#numbers.formatDecimal(item.subtotal, 1, 2)} + ' $'">Subtotal</td>
+                        <td>
+                            <a th:href="@{/cart/remove/{productId}(productId=${item.product.id})}"
+                                class="btn btn-danger btn-sm">Remove</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="text-end">
+                <h4>Total: <span th:text="${#numbers.formatDecimal(cart.totalPrice, 1, 2)} + ' $'">Total Price</span>
+                </h4>
+                <a th:href="@{/checkout}" class="btn btn-success">Proceed to Checkout</a>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bootstrap JS Bundle -->
+    <script th:src="@{/js/bootstrap.bundle.min.js}"></script>
+</body>
+
+</html>

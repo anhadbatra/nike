@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6"
+      layout:decorate="~{layout}">
+
+<head>
+    <title>Contact Us - Hoodies Store</title>
+    <!-- Additional head elements if needed -->
+</head>
+
+<body>
+    <div layout:fragment="content">
+        <!-- Contact Form -->
+        <div class="container my-5 flex-grow-1">
+            <h1 class="text-center mb-4">Contact Us</h1>
+            <form th:action="@{/contact}" th:object="${contact}" method="post" class="w-50 mx-auto">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="name" th:field="*{name}" required>
+                    <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="text-danger"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" class="form-control" id="email" th:field="*{email}" required>
+                    <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-danger"></div>
+                </div>
+                <div class="mb-3">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea class="form-control" id="message" th:field="*{message}" rows="4" required></textarea>
+                    <div th:if="${#fields.hasErrors('message')}" th:errors="*{message}" class="text-danger"></div>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Submit</button>
+            </form>
+            <p class="text-center mt-4 text-success" th:if="${message}" th:text="${message}"></p>
+        </div>
+    </div>
+</body>
+
+</html>
