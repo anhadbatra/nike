@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -98,6 +99,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUser(User user) {
+        if (user.getId() == null) {
+            throw new IllegalArgumentException("User ID must not be null for update operation.");
+        }
         User existingUser = getUserById(user.getId());
         existingUser.setUsername(user.getUsername());
         existingUser.setEmail(user.getEmail());
@@ -121,13 +125,41 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
-    @Override
-    @Transactional
-    public void assignRolesToUser(User user, List<Long> roleIds) {
-        Set<Role> roles = new HashSet<>(roleRepository.findAllById(roleIds));
-        user.setRoles(roles);
-        userRepository.save(user);
+@Override
+@Transactional
+public void assignRolesToUser(User user, List<Long> roleIds) {
+    if (roleIds == null || roleIds.isEmpty()) {
+        throw new IllegalArgumentException("Role IDs cannot be null or empty.");
     }
+
+    try {
+        // Fetch roles by IDs
+        Set<Role> roles = new HashSet<>(roleRepository.findAllById(roleIds));
+        if (roles.size() != roleIds.size()) {
+            throw new IllegalArgumentException("One or more Role IDs are invalid: " + roleIds);
+        }
+
+        // Assign roles to user
+        user.setRoles(roles);
+        user.setConfirmPassword("defaultPassword");
+        userRepository.save(user);
+        userRepository.flush();
+
+        System.out.println("Roles successfully assigned to user: " + user.getUsername());
+    } catch (DataAccessException dae) {
+        System.err.println("Database error: " + dae.getMessage());
+        dae.printStackTrace();
+        throw dae; // Rethrow to ensure transaction rollback
+    } catch (Exception e) {
+        System.err.println("Error assigning roles to user: " + e.getMessage());
+        e.printStackTrace();
+        throw e;
+    }
+}
+
+
+
+
 
     @Override
     public List<User> searchUsers(String keyword) {

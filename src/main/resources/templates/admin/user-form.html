@@ -51,19 +51,17 @@
                 <div th:if="${#fields.hasErrors('confirmPassword')}" class="text-danger" th:errors="*{confirmPassword}">Confirm Password Error</div>
             </div>
             
-            <!-- Roles Field -->
             <div class="mb-3">
                 <label class="form-label">Roles</label>
                 <div th:each="role : ${roles}" class="form-check">
-                    <input type="checkbox" name="roleIds" th:value="${role.id}" 
-                           class="form-check-input" 
-                           th:id="'role_' + ${role.id}"
-                           th:checked="${user.roles != null} ? ${user.roles.contains(role)} : false"/>
-                    <label class="form-check-label" th:for="'role_' + ${role.id}" th:text="${role.name}">Role Name</label>
+                    <input type="radio" class="form-check-input" name="roleIds" 
+                           th:value="${role.id}" th:checked="${user.roles.contains(role)}" 
+                           id="role_[[${role.id}]]">
+                    <label class="form-check-label" th:for="'role_' + ${role.id}" th:text="${role.name}"></label>
                 </div>
-                <!-- Validation Error Message -->
                 <div th:if="${#fields.hasErrors('roles')}" class="text-danger" th:errors="*{roles}">Roles Error</div>
             </div>
+            
             
             <!-- Submit and Cancel Buttons -->
             <button type="submit" class="btn btn-primary" 

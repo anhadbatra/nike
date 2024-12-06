@@ -98,8 +98,11 @@ public class AdminUserController {
                              @RequestParam(value = "roleIds", required = false) List<Long> roleIds,
                              Model model) {
         userValidator.validate(user, bindingResult);
+        System.out.println("Role IDs: " + roleIds);
+
         
         if (bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(error -> System.out.println("Validation error: " + error.getDefaultMessage()));
             model.addAttribute("roles", roleService.getAllRoles());
             return "admin/user-form";
         }
